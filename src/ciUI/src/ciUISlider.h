@@ -111,7 +111,7 @@ public:
         
 		max = _max; 
 		min = _min; 
-        labelPrecision = 2;
+        labelPrecision = integer ? 0 : 2;
 
 		if(value > max)
 		{
