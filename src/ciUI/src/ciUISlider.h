@@ -409,7 +409,7 @@ public:
 	void setValue(float _value)
 	{
         if (integer) {
-            _value = int(value);
+            _value = int(_value);
         }
 		value = ci::lmap<float>(_value, min, max, 0.0, 1.0);
         if(value > 1.0f)
