@@ -122,8 +122,12 @@ void ParticlesApp::setupGui()
 //    m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params.getb("bounce"), "bounce", CI_UI_FONT_MEDIUM));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 40, m_params.getf("size"), "size"));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 20, m_params.getf("lifespan"), "lifespan"));
-    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 50, m_params.getf("pulse_rate"), "pulse_rate"));
-    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 8, m_params.geti("symmetry"), "symmetry", true));
+
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 50, m_params.getf("pulse_rate"), "spaz rate"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 10, m_params.getf("pulse_amplitude"), "spaz size"));
+
+    m_symmetrySlider = new ciUISlider(70, 15, 1, 8, m_params.geti("symmetry"), "symmetry", true);
+    m_pGUIOn->addWidgetDown(m_symmetrySlider);
 
     m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params.getb("draw_style"), "draw_style", CI_UI_FONT_MEDIUM));
 
@@ -237,6 +241,9 @@ void ParticlesApp::guiEvent(ciUIEvent *event)
     } else if (name == "pulse_rate") {
         ciUISlider *slider = (ciUISlider *) event->widget;
         m_params.setf("pulse_rate", slider->getScaledValue());
+    } else if (name == "pulse_amplitude") {
+        ciUISlider *slider = (ciUISlider *) event->widget;
+        m_params.setf("pulse_amplitude", slider->getScaledValue());
     } else if (name == "size") {
         ciUISlider *slider = (ciUISlider *) event->widget;
         m_params.setf("size", slider->getScaledValue());

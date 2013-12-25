@@ -55,7 +55,7 @@ void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, fl
 
     m_decay = Rand::randFloat(0.95, 0.99);
     
-    a = Rand::randFloat(0.1, 1.0);
+    a = Rand::randFloat(0.1, Params::get().getf("pulse_amplitude"));
     r = Params::get().getf("pulse_rate"); // Rand::randFloat(0, 10);
     p = app::getElapsedSeconds(); // Rand::randFloat(0, M_PI);
     
@@ -153,7 +153,7 @@ void BasicParticle::draw()
     }
 
     if (m_drawStyle == 0) {
-    gl::drawSolidCircle( loc(), radius );
+        gl::drawSolidCircle( loc(), radius );
     } else {
         gl::drawSolidRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
     }    
