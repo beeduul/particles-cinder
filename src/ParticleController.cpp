@@ -83,6 +83,14 @@ void ParticleController::removeParticles( int amt )
     }
 }
 
+void ParticleController::moveParticles(const Vec2f &offset)
+{
+    for(list<Particle *>::iterator p = m_particles.begin(); p != m_particles.end(); p++)
+    {
+        (*p)->loc((*p)->loc() + offset);
+    }
+}
+
 ColorAf ParticleController::averageColors()
 {
     ColorAf average = ColorAf::gray(.5);

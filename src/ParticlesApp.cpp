@@ -23,6 +23,14 @@ void ParticlesApp::setup()
     setupGui();
 }
 
+void ParticlesApp::setFullScreen(bool fullscreen)
+{
+    Vec2f original_center(app::getWindowWidth()/2, app::getWindowHeight()/2);
+    AppBasic::setFullScreen(fullscreen);
+    Vec2f new_center(app::getWindowWidth()/2, app::getWindowHeight()/2);
+    m_particleController.moveParticles(new_center - original_center);
+}
+
 void ParticlesApp::quit()
 {
     delete m_pGUIOff;

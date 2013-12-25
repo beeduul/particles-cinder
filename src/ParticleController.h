@@ -33,6 +33,8 @@ public:
     void addParticles( int amt );
     void removeParticles( int amt );
 
+    void moveParticles(const Vec2f &offset);
+    
     Perlin m_perlin;
 
     ColorAf averageColors();
