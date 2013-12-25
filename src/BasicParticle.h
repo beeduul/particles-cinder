@@ -45,6 +45,7 @@ private:
     float r;
     float p;
     
+    int m_drawStyle;
 };
 
 #endif /* defined(__ParticlesApp__BasicParticle__) */

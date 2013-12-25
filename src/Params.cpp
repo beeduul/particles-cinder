@@ -19,6 +19,7 @@ Params::Params()
     setf("lifespan", 10.0);
     setf("pulse_rate", 5.0);
     seti("symmetry", 1);
+    setb("draw_style", 0);
 }
 
 Params &Params::get()

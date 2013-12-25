@@ -125,6 +125,8 @@ void ParticlesApp::setupGui()
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 50, m_params.getf("pulse_rate"), "pulse_rate"));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 8, m_params.geti("symmetry"), "symmetry", true));
 
+    m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params.getb("draw_style"), "draw_style", CI_UI_FONT_MEDIUM));
+
     m_pGUIOn->addWidgetDown(new ciUIFPS(CI_UI_FONT_SMALL));
 
 
@@ -229,6 +231,9 @@ void ParticlesApp::guiEvent(ciUIEvent *event)
         m_params.setf("kdepthThresholdHi", rslider->getScaledValueHigh());
 //    } else if (name == "bounce") {
 //        m_params.setb("bounce", !m_params.getb("bounce"));
+    } else if (name == "draw_style") {
+        m_params.setb("draw_style", !m_params.getb("draw_style"));
+
     } else if (name == "pulse_rate") {
         ciUISlider *slider = (ciUISlider *) event->widget;
         m_params.setf("pulse_rate", slider->getScaledValue());

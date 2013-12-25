@@ -59,6 +59,8 @@ void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, fl
     r = Params::get().getf("pulse_rate"); // Rand::randFloat(0, 10);
     p = app::getElapsedSeconds(); // Rand::randFloat(0, M_PI);
     
+    m_drawStyle = Params::get().getb("draw_style");
+    
 }
 
 void BasicParticle::update_behavior(const ParticleController &pc)
@@ -150,7 +152,9 @@ void BasicParticle::draw()
         case dead: ; // no-op
     }
 
+    if (m_drawStyle == 0) {
     gl::drawSolidCircle( loc(), radius );
-    
-    
+    } else {
+        gl::drawSolidRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
+    }    
 }
