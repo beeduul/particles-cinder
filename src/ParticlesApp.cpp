@@ -385,6 +385,8 @@ void ParticlesApp::keyDown( KeyEvent event )
             symmetry %= 8;
             symmetry++;
             m_params.seti("symmetry", symmetry);
+            m_symmetrySlider->setValue(symmetry);
+
         } break;
             
         case ' ': {

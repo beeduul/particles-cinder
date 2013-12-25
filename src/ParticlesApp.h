@@ -82,6 +82,8 @@ private:
     ciUICanvas *m_pGUIOff;
     ciUICanvas *m_pGUIOn;
     
+    ciUISlider *m_symmetrySlider;
+    
     Vec2f m_lastMouseLoc;
     
     
