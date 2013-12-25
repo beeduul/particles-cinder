@@ -37,7 +37,7 @@ using namespace std;
 #define CI_UI_GLOBAL_PADDING 4
 #define CI_UI_GLOBAL_WIDGET_SPACING 8
 
-#define CI_UI_COLOR_BACK ci::ColorA(0.0f, 0.0f, 0.0f, 50.0f/255.0f)                       //the rect's back color
+#define CI_UI_COLOR_BACK ci::ColorA(1.0f, 1.0f, 1.0f, 50.0f/255.0f)                       //the rect's back color
 #define CI_UI_COLOR_OUTLINE ci::ColorA(1.0f, 1.0f, 1.0f, 100.0f/255.0f)                 //the rect's outline color 
 #define CI_UI_COLOR_OUTLINE_HIGHLIGHT ci::ColorA(1.0f, 1.0f, 1.0f, 200.0f/255.0f)       //the rect's onMouseOver outline highlight color         
 #define CI_UI_COLOR_FILL ci::ColorA(1.0f, 1.0f, 1.0f, 200.0f/255.0f)                    //the rect's fill color 

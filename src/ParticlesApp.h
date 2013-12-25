@@ -23,13 +23,14 @@
 #include "Params.h"
 #include "ParticleController.h"
 
-#include "ciUI.h"
+#include "ciUI/src/ciUI.h"
 
+#ifdef USE_KINET
 #include "CinderFreenect.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Vbo.h"
-
+#endif
 
 using namespace ci;
 using namespace ci::app;
@@ -50,8 +51,9 @@ public:
     void minifyGui();
     void expandGui();
     void guiEvent(ciUIEvent *event);
-    
-	virtual void mouseDown(MouseEvent event);
+  
+    virtual void mouseUp(MouseEvent event);
+    virtual void mouseDown(MouseEvent event);
     //    virtual void mouseMove(MouseEvent event);
     virtual void mouseDrag(MouseEvent event);
     virtual void keyDown( KeyEvent event );
@@ -59,47 +61,52 @@ public:
     void addParticleAt(Vec2f position, Vec2f vector);
     
     Params& params() {
-        return _params;
+        return m_params;
     }
+
+protected:
+    void toggleMenu();
     
 private:
-    Params _params;
-    
-    fs::path filePath;
-    gl::Texture myImage;
+    Params m_params;
     
     bool m_capture;
     fs::path m_capturePath;
     
-    ParticleController particle_controller;
+    ParticleController m_particleController;
+  
+  
+    bool m_eventHandled;
+  
+    bool m_toggleMenu;
+    ciUICanvas *m_pGUIOff;
+    ciUICanvas *m_pGUIOn;
     
-    bool bToggleMenu;
-    ciUICanvas *pGuiOff;
-    ciUICanvas *pGuiOn;
+    Vec2f m_lastMouseLoc;
     
-    Vec2f last_mouse_loc;
-
-    // KINECT
+    
+#ifdef USE_KINECT
     bool            m_useKinect;
     KinectRef		m_kinect;
     gl::Texture		m_kinectColorTexture, m_kinectDepthTexture;
-    
-	// CAMERA
-	CameraPersp		mCam;
-	Quatf			mSceneRotation;
-	Vec3f			mEye, mCenter, mUp;
-	float			mCameraDistance;
-	float			mKinectTilt;
+  
+    // CAMERA
+    CameraPersp		mCam;
+    Quatf			mSceneRotation;
+    Vec3f			mEye, mCenter, mUp;
+    float			mCameraDistance;
+    float			mKinectTilt;
 
     // VBO AND SHADER
     static const int VBO_X_RES  = 640;
     static const int VBO_Y_RES  = 480;
-	gl::VboMesh		mVboMesh;
-	gl::GlslProg	mShader;
+    gl::VboMesh		mVboMesh;
+    gl::GlslProg	mShader;
 
     void setupKinect();
     void createVbo();
-    bool useKinect() { return _params.getb("kinect"); }
+    bool useKinect() { return m_params.getb("kinect"); }
+#endif
 
 };
 

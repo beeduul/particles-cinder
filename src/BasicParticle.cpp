@@ -56,8 +56,8 @@ void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, fl
     m_decay = Rand::randFloat(0.95, 0.99);
     
     a = Rand::randFloat(0.1, 1.0);
-    r = Rand::randFloat(3, 20);
-    p = Rand::randFloat(0, M_PI);
+    r = Params::get().getf("pulse_rate"); // Rand::randFloat(0, 10);
+    p = app::getElapsedSeconds(); // Rand::randFloat(0, M_PI);
     
 }
 
@@ -77,20 +77,20 @@ void BasicParticle::update_behavior(const ParticleController &pc)
     
     m_loc += m_vec * m_vel;
 
-    bool bounce = Params::get().getb("bounce");
-    if (bounce) { // bounce walls
-        if (m_loc.x < 0 && m_vec.x < 0) {
-            m_vec.x = -m_vec.x;
-        } else if (m_loc.x > ci::app::getWindowWidth() && m_vec.x > 0) {
-            m_vec.x = -m_vec.x;
-        }
-        
-        if (m_loc.y < 0 && m_vec.y < 0) {
-            m_vec.y = -m_vec.y;
-        } else if (m_loc.y > ci::app::getWindowHeight() && m_vec.y > 0) {
-            m_vec.y = -m_vec.y;
-        }
-    }
+//    bool bounce = Params::get().getb("bounce");
+//    if (bounce) { // bounce walls
+//        if (m_loc.x < 0 && m_vec.x < 0) {
+//            m_vec.x = -m_vec.x;
+//        } else if (m_loc.x > ci::app::getWindowWidth() && m_vec.x > 0) {
+//            m_vec.x = -m_vec.x;
+//        }
+//        
+//        if (m_loc.y < 0 && m_vec.y < 0) {
+//            m_vec.y = -m_vec.y;
+//        } else if (m_loc.y > ci::app::getWindowHeight() && m_vec.y > 0) {
+//            m_vec.y = -m_vec.y;
+//        }
+//    }
     
     m_vel *= m_decay;
 
@@ -130,24 +130,27 @@ void BasicParticle::draw()
 
     gl::color(Color(stage(), t));
 
-    float r = m_radius;
+    float phase = app::getElapsedSeconds() - p;
+    float swell = (1 + sin(phase * r) * a);
+    
+    float radius = m_radius * swell;
     switch(stage()) {
         case birth: {
-            r = m_radius * easeOutBack(t); // easeInElastic(t, 5, 3);
+            radius = radius * easeOutBack(t); // easeInElastic(t, 5, 3);
             break;
         }
         case alive: {
-            r = m_radius * (1 + sin(t * r) * a);
+//            radius = radius;
             break;
         }
         case dying: {
-            r = m_radius * (1 - easeOutBack(t)); // easeInElastic(t, 5, 3);
+            radius = radius * (1 - easeOutBack(t)); // easeInElastic(t, 5, 3);
             break;
         }
         case dead: ; // no-op
     }
 
-    gl::drawSolidCircle( loc(), r );
+    gl::drawSolidCircle( loc(), radius );
     
     
 }

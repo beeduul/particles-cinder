@@ -3,6 +3,7 @@
 
 void ParticlesApp::prepareSettings(Settings *settings)
 {
+    settings->setTitle("Particles");
     settings->setWindowSize( 512, 512 );
     settings->setFrameRate( 60.0f );
     settings->setResizable(true);
@@ -10,22 +11,29 @@ void ParticlesApp::prepareSettings(Settings *settings)
 
 void ParticlesApp::setup()
 {
+    setFullScreen(false);
+  
     m_capture = false;
     gl::enableAlphaBlending();
-    
-    setupKinect();
 
+#ifdef USE_KINECT
+    setupKinect();
+#endif
+  
     setupGui();
 }
 
 void ParticlesApp::quit()
 {
-    delete pGuiOff;
-    delete pGuiOn;
+    delete m_pGUIOff;
+    delete m_pGUIOn;
 }
 
 void ParticlesApp::update()
 {
+  m_eventHandled = false;
+  
+#ifdef USE_KINECT
     if (useKinect() && m_kinect) {
         if (m_kinect->checkNewDepthFrame())
             m_kinectDepthTexture = m_kinect->getDepthImage();
@@ -36,35 +44,27 @@ void ParticlesApp::update()
         mEye = Vec3f( 0.0f, 0.0f, mCameraDistance );
         mCam.lookAt( mEye, mCenter, mUp );
     }
-    
-    if (bToggleMenu) {
-        pGuiOff->toggleVisible();
-        pGuiOn->toggleVisible();
-        bToggleMenu = false;
-    }
-    pGuiOff->update();
-    pGuiOn->update();
+#endif
+  
+    m_pGUIOff->update();
+    m_pGUIOn->update();
 
-    particle_controller.update();
+    m_particleController.update();
     
-    if (getElapsedFrames() % 100  == 0) {
-        cout << "num particles: # " << particle_controller.numParticles() << endl;
-    }
-    
+//    if (getElapsedFrames() % 100  == 0) {
+//        cout << "num particles: # " << m_particleController.numParticles() << endl;
+//    }
+  
 }
 
 void ParticlesApp::draw()
 {
-//    ColorAf averageColor = particle_controller.averageColors();
+//    ColorAf averageColor = m_particleController.averageColors();
 //    ColorAf clearColor(245/255.0, 245/255.0, 220/255.0); // 1 - averageColor.r, 1 - averageColor.g, 1 - averageColor.b);
     ColorAf clearColor(Colorf::black());
     gl::clear(clearColor, true); //clearColor * .5, true );
     
-    if (!filePath.empty()) {
-        gl::draw( myImage, getWindowBounds() );
-    }
-    
-    particle_controller.draw();
+    m_particleController.draw();
 
     if (m_capture && !m_capturePath.empty()) {
         fs::path path = m_capturePath;
@@ -73,14 +73,15 @@ void ParticlesApp::draw()
         writeImage(path, copyWindowSurface() );
     }
 
-    if (_params.getb("bounce")) {
-        gl::color(Color::white());
-        Rectf r = getWindowBounds();
-        gl::drawStrokedRect(r);
-    }
+//    if (m_params.getb("bounce")) {
+//        gl::color(Color::white());
+//        Rectf r = getWindowBounds();
+//        gl::drawStrokedRect(r);
+//    }
 
     Vec2f windowsize = getWindowBounds().getSize();
 
+#ifdef USE_KINECT
     if (useKinect() && m_kinect) {
         gl::color(Color::white());
         if( m_kinectDepthTexture ) {
@@ -93,8 +94,8 @@ void ParticlesApp::draw()
             m_kinectDepthTexture.bind( 0 );
             mShader.bind();
             mShader.uniform( "depthTex", 0 );
-            mShader.uniform( "depthThresholdLo", _params.getf("kdepthThresholdLo") );
-            mShader.uniform( "depthThresholdHi", _params.getf("kdepthThresholdHi") );
+            mShader.uniform( "depthThresholdLo", m_params.getf("kdepthThresholdLo") );
+            mShader.uniform( "depthThresholdHi", m_params.getf("kdepthThresholdHi") );
             gl::draw( mVboMesh );
             mShader.unbind();
             gl::popMatrices();
@@ -102,44 +103,53 @@ void ParticlesApp::draw()
 //        if( m_kinectColorTexture )
 //            gl::draw( m_kinectColorTexture, Rectf(165, windowsize.y - 120, 325, windowsize.y) );
     }
-    
-    pGuiOff->draw();
-    pGuiOn->draw();
+#endif
+  
+    m_pGUIOff->draw();
+    m_pGUIOn->draw();
 
 }
 
 void ParticlesApp::setupGui()
 {
-    pGuiOff = new ciUICanvas();
-    pGuiOff->addWidgetDown(new ciUILabelButton(false, ">>", CI_UI_FONT_LARGE));
-    pGuiOff->registerUIEvents(this, &ParticlesApp::guiEvent);
+    m_pGUIOff = new ciUICanvas();
+    m_pGUIOff->addWidgetDown(new ciUILabelButton(false, ">>", CI_UI_FONT_LARGE));
+    m_pGUIOff->registerUIEvents(this, &ParticlesApp::guiEvent);
     
-    pGuiOn = new ciUICanvas();
-    pGuiOn->toggleVisible();
-    pGuiOn->addWidgetDown(new ciUILabelButton(false, "<<", CI_UI_FONT_LARGE));
-    pGuiOn->addWidgetDown(new ciUILabelToggle(_params.getb("bounce"), "bounce", CI_UI_FONT_MEDIUM));
-    pGuiOn->addWidgetDown(new ciUISlider(70, 15, 1, 40, _params.getf("size"), "size"));
-    pGuiOn->addWidgetDown(new ciUISlider(70, 15, 1, 20, _params.getf("lifespan"), "lifespan"));
-    pGuiOn->addWidgetDown(new ciUISlider(70, 15, 1, 8, _params.geti("symmetry"), "symmetry", true));
+    m_pGUIOn = new ciUICanvas();
+    m_pGUIOn->toggleVisible();
+    m_pGUIOn->addWidgetDown(new ciUILabelButton(false, "<<", CI_UI_FONT_LARGE));
+//    m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params.getb("bounce"), "bounce", CI_UI_FONT_MEDIUM));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 40, m_params.getf("size"), "size"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 20, m_params.getf("lifespan"), "lifespan"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 50, m_params.getf("pulse_rate"), "pulse_rate"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 8, m_params.geti("symmetry"), "symmetry", true));
 
+    m_pGUIOn->addWidgetDown(new ciUIFPS(CI_UI_FONT_SMALL));
+
+
+#ifdef USE_KINECT
     if (m_kinect) {
-        pGuiOn->addWidgetDown(new ciUILabelToggle(_params.getb("kinect"), "kinect", CI_UI_FONT_MEDIUM));
-        pGuiOn->addWidgetDown(new ciUIRangeSlider(20,120,0.0,1,_params.getf("kdepthThresholdLo"),_params.getf("kdepthThresholdHi"), "kdepth"));
+        m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params.getb("kinect"), "kinect", CI_UI_FONT_MEDIUM));
+        m_pGUIOn->addWidgetDown(new ciUIRangeSlider(20,120,0.0,1,m_params.getf("kdepthThresholdLo"),m_params.getf("kdepthThresholdHi"), "kdepth"));
     }
-
-    pGuiOn->registerUIEvents(this, &ParticlesApp::guiEvent);
+#endif
+  
+    m_pGUIOn->registerUIEvents(this, &ParticlesApp::guiEvent);
     
 }
 
-void ParticlesApp::setupKinect() {
-    
+#ifdef USE_KINECT
+
+void ParticlesApp::setupKinect()
+{
     cout << "Found " << Kinect::getNumDevices() << " Kinects" << endl;
     if (Kinect::getNumDevices() > 0) {
         //m_kinect = Kinect::create();
     } else {
         cout << "Didn't find any Kinects" << endl;
     }
-    _params.setb("kinect", (m_kinect != NULL));
+    m_params.setb("kinect", (m_kinect != NULL));
 
     if (m_kinect) {
         // SETUP CAMERA
@@ -194,34 +204,48 @@ void ParticlesApp::createVbo()
 	mVboMesh.bufferTexCoords2d( 0, texCoords );
 }
 
+#endif
+
+
 void ParticlesApp::guiEvent(ciUIEvent *event)
 {
+    if (m_eventHandled) {
+      return;
+    }
+  
     string name = event->widget->getName();
     bool handled = true;
+
+    cout << "guiEvent '" << name << "'" << endl;
+  
     if(name == ">>" || name == "<<")
     {
-        bToggleMenu = true;
+        m_toggleMenu = true;
     } else if (name == "kinect") {
-        _params.setb("kinect", !_params.getb("kinect"));
+        m_params.setb("kinect", !m_params.getb("kinect"));
     } else if (name == "kdepth") {
         ciUIRangeSlider *rslider = (ciUIRangeSlider *) event->widget;
-        _params.setf("kdepthThresholdLo", rslider->getScaledValueLow());
-        _params.setf("kdepthThresholdHi", rslider->getScaledValueHigh());
-    } else if (name == "bounce") {
-        _params.setb("bounce", !_params.getb("bounce"));
+        m_params.setf("kdepthThresholdLo", rslider->getScaledValueLow());
+        m_params.setf("kdepthThresholdHi", rslider->getScaledValueHigh());
+//    } else if (name == "bounce") {
+//        m_params.setb("bounce", !m_params.getb("bounce"));
+    } else if (name == "pulse_rate") {
+        ciUISlider *slider = (ciUISlider *) event->widget;
+        m_params.setf("pulse_rate", slider->getScaledValue());
     } else if (name == "size") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        _params.setf("size", slider->getScaledValue());
+        m_params.setf("size", slider->getScaledValue());
     } else if (name == "lifespan") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        _params.setf("lifespan", slider->getScaledValue());
+        m_params.setf("lifespan", slider->getScaledValue());
     } else if (name == "symmetry") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        _params.seti("symmetry", slider->getScaledValue());
+        m_params.seti("symmetry", slider->getScaledValue());
     } else {
         handled = false;
     }
-    
+  
+    m_eventHandled = true;
     event->setHandled(handled);
     
     
@@ -229,36 +253,52 @@ void ParticlesApp::guiEvent(ciUIEvent *event)
 
 void ParticlesApp::mouseDown( MouseEvent event )
 {
-    if (event.isHandled()) {
+    bool handled = m_eventHandled;
+
+    cout << "mouseDown, handled: " << handled << endl;
+    if (handled) {
         return;
     }
     
     if (event.isLeftDown()) {
-        last_mouse_loc = event.getPos();
-        
         ColorAf birthColor(Rand::randFloat(), Rand::randFloat(), Rand::randFloat());
-        ColorAf deathColor = ColorAf(1 - birthColor.r, 1 - birthColor.g, 1 - birthColor.b);// (Rand::randFloat(), Rand::randFloat(), Rand::randFloat());
-        
-        particle_controller.setColors(birthColor, deathColor);
+        ColorAf deathColor = ColorAf(1 - birthColor.r, 1 - birthColor.g, 1 - birthColor.b);
+        m_particleController.setColors(birthColor, deathColor);
 
-        addParticleAt(last_mouse_loc, Vec2f(0, 0));
+        m_lastMouseLoc = event.getPos();
+        addParticleAt(m_lastMouseLoc, Vec2f(0, 0));
+    }
+}
+
+void ParticlesApp::mouseUp(MouseEvent event)
+{
+    bool handled = m_eventHandled;
+    cout << "mouseUp, handled: " << handled << endl;
+    
+    // hack for double menu click
+    if (m_toggleMenu) {
+        toggleMenu();
+        m_toggleMenu = false;
     }
 }
 
 void ParticlesApp::mouseDrag(MouseEvent event)
 {
-    if (event.isHandled()) {
+    bool handled = m_eventHandled;
+    cout << "mouseDrag, handled: " << handled << endl;
+
+    if (handled) {
         return;
     }
 
-    Vec2f mouse_vec = event.getPos() - last_mouse_loc;
+    Vec2f mouse_vec = event.getPos() - m_lastMouseLoc;
     //    if (event.isLeftDown()) {
     int num_particles = Rand::randInt(10);
     for (int i = 0; i < num_particles; i++) {
         addParticleAt(event.getPos(), mouse_vec * .25);
     }
     //    }
-    last_mouse_loc = event.getPos();
+    m_lastMouseLoc = event.getPos();
 }
 
 void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
@@ -272,7 +312,7 @@ void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
     float dist = sqrt(cPosition.x * cPosition.x + cPosition.y * cPosition.y);
 
     float vAngle = atan2(vector.y, vector.x);
-    int symmetry = _params.geti("symmetry");
+    int symmetry = m_params.geti("symmetry");
     float slice = M_PI * 2 / symmetry;
 
     for (int i = 0; i < symmetry; i++)
@@ -283,11 +323,16 @@ void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
         pAngle += slice;
         vAngle += slice;
         
-        particle_controller.addParticleAt(newPos, newVec);
+        m_particleController.addParticleAt(newPos, newVec);
     }
     
 }
 
+void ParticlesApp::toggleMenu()
+{
+    m_pGUIOff->toggleVisible();
+    m_pGUIOn->toggleVisible();
+}
 
 void ParticlesApp::keyDown( KeyEvent event )
 {
@@ -307,21 +352,23 @@ void ParticlesApp::keyDown( KeyEvent event )
 //    cout << endl;
     
     switch(event.getChar()) {
+        case 'f': {
+            setFullScreen(!isFullScreen());
+        } break;
+            
         case 'p': {
-//            cout << "addParticles" << endl;
-            particle_controller.addParticles(Rand::randInt(1000));
+            m_particleController.addParticles(Rand::randInt(1000));
         } break;
 
         case 'P': {
-//            cout << "removeParticles" << endl;
-            particle_controller.removeParticles(Rand::randInt(100));
+            m_particleController.removeParticles(Rand::randInt(100));
         } break;
         
         case 's': {
-            int symmetry = _params.geti("symmetry");
+            int symmetry = m_params.geti("symmetry");
             symmetry %= 8;
             symmetry++;
-            _params.seti("symmetry", symmetry);
+            m_params.seti("symmetry", symmetry);
         } break;
             
         case ' ': {
@@ -336,7 +383,7 @@ void ParticlesApp::keyDown( KeyEvent event )
             
         case '/':
         case '?': {
-            bToggleMenu = true;
+            toggleMenu();
         } break;
     }
 }

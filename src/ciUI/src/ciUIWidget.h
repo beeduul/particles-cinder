@@ -285,7 +285,7 @@ public:
     
 	virtual void setState(int _state)
     {
-        state = _state; 
+        state = _state;
     }
     
 	virtual void setDrawPadding(bool _draw_padded_rect)
