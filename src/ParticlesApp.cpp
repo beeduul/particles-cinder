@@ -364,6 +364,10 @@ void ParticlesApp::keyDown( KeyEvent event )
 //    cout << endl;
     
     switch(event.getChar()) {
+        case 'c': {
+            m_particleController.removeParticles(m_particleController.numParticles());
+        } break;
+            
         case 'f': {
             setFullScreen(!isFullScreen());
         } break;
