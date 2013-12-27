@@ -109,7 +109,7 @@ ColorAf BasicParticle::Color(Stage stage, float t)
     switch(stage) {
         case birth: {
             ColorAf c = m_birthColor;
-            c.a = t;
+//            c.a = t;
             return c;
         }
         case alive: {
