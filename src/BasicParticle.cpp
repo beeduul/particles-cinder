@@ -49,9 +49,9 @@ void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, fl
     m_birthColor = birthColor;
     m_deathColor = deathColor;
     
-    stage_duration(birth, Params::get().getf("lifespan") * .1);
+    stage_duration(birth, Params::get().getf("lifespan") * .2);
     stage_duration(alive, Params::get().getf("lifespan") * .6);
-    stage_duration(dying, Params::get().getf("lifespan") * .3);
+    stage_duration(dying, Params::get().getf("lifespan") * .2);
 
     m_decay = Rand::randFloat(0.95, 0.99);
     
