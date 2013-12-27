@@ -91,6 +91,7 @@ private:
     
     ciUILabel *m_particleCountLabel;
     ciUISlider *m_symmetrySlider;
+    ciUISlider *m_drawStyleSlider;
     
     Vec2f m_lastMouseLoc;
     
