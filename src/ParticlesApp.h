@@ -71,6 +71,10 @@ protected:
 private:
     Params m_params;
     
+    int m_captureCounter;
+    bool m_useClearImage;
+    gl::TextureRef m_clearImage;
+
     bool m_capture;
     fs::path m_capturePath;
     

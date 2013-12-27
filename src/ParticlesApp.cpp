@@ -11,6 +11,9 @@ void ParticlesApp::prepareSettings(Settings *settings)
 
 void ParticlesApp::setup()
 {
+    m_captureCounter = 0;
+    m_useClearImage = false;
+    
     setFullScreen(false);
   
     m_capture = false;
@@ -29,6 +32,8 @@ void ParticlesApp::setFullScreen(bool fullscreen)
     AppBasic::setFullScreen(fullscreen);
     Vec2f new_center(app::getWindowWidth()/2, app::getWindowHeight()/2);
     m_particleController.moveParticles(new_center - original_center);
+    
+    m_clearImage = gl::Texture::create(getWindowWidth(), getWindowHeight());
 }
 
 void ParticlesApp::quit()
@@ -39,6 +44,11 @@ void ParticlesApp::quit()
 
 void ParticlesApp::update()
 {
+    if (m_captureCounter == 1) {
+        m_useClearImage = true;
+        m_clearImage->update(copyWindowSurface());
+    }
+    
   m_eventHandled = false;
   
 #ifdef USE_KINECT
@@ -72,8 +82,13 @@ void ParticlesApp::draw()
 {
 //    ColorAf averageColor = m_particleController.averageColors();
 //    ColorAf clearColor(245/255.0, 245/255.0, 220/255.0); // 1 - averageColor.r, 1 - averageColor.g, 1 - averageColor.b);
+
+    if (m_useClearImage && m_clearImage) {
+        gl::draw(m_clearImage, getWindowBounds());
+    } else {
     ColorAf clearColor(Colorf::black());
     gl::clear(clearColor, true); //clearColor * .5, true );
+    }
     
     m_particleController.draw();
 
@@ -116,9 +131,12 @@ void ParticlesApp::draw()
     }
 #endif
   
+    if (m_captureCounter == 0) {
     m_pGUIOff->draw();
     m_pGUIOn->draw();
-
+    } else {
+        m_captureCounter--;
+    }
 }
 
 void ParticlesApp::setupGui()
@@ -418,6 +436,21 @@ void ParticlesApp::keyDown( KeyEvent event )
                 m_capture = false;
         } break;
             
+        case '>':
+        {
+            m_useClearImage = false;
+            m_clearImage = gl::Texture::create(getWindowWidth(), getWindowHeight());
+            Surface32f mySurface(getWindowWidth(), getWindowHeight(), true, SurfaceChannelOrder::RGBA);
+            cinder::ip::fill(&mySurface, Colorf::black());
+            m_clearImage->update(mySurface);
+        } break;
+
+        case '.': {
+            if (m_captureCounter == 0) {
+                m_captureCounter = 2;
+            }
+        } break;
+
         case '/':
         case '?': {
             toggleMenu();
