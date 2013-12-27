@@ -46,6 +46,8 @@ private:
     float m_start;
     
     int m_drawStyle;
+    
+    Vec2f m_gravity;
 };
 
 #endif /* defined(__ParticlesApp__BasicParticle__) */

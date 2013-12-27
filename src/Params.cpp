@@ -21,6 +21,7 @@ Params::Params()
     setf("pulse_amplitude", 1.0);
     seti("symmetry", 1);
     seti("draw_style", 0);
+    setf("gravity", 0);
 }
 
 Params &Params::get()

@@ -157,6 +157,9 @@ void ParticlesApp::setupGui()
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 5, m_params.getf("pulse_rate"), "pulse_rate"));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 5, m_params.getf("pulse_amplitude"), "pulse_amplitude"));
 
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, -.5, .5, m_params.getf("gravity"), "gravity"));
+
+    
     m_symmetrySlider = new ciUISlider(70, 15, 1, MAX_SYMMETRY, m_params.geti("symmetry"), "symmetry", true);
     m_pGUIOn->addWidgetDown(m_symmetrySlider);
 
@@ -277,6 +280,10 @@ void ParticlesApp::guiEvent(ciUIEvent *event)
         ciUISlider *slider = (ciUISlider *) event->widget;
         m_params.setf("pulse_amplitude", slider->getScaledValue());
 
+    } else if (name == "gravity") {
+        ciUISlider *slider = (ciUISlider *) event->widget;
+        m_params.setf("gravity", slider->getScaledValue());
+        
     } else if (name == "size") {
         ciUISlider *slider = (ciUISlider *) event->widget;
         m_params.setf("size", slider->getScaledValue());

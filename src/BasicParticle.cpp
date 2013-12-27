@@ -61,6 +61,15 @@ void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, fl
     
     m_drawStyle = Params::get().geti("draw_style");
     
+    if (Params::get().geti("symmetry") == 1) {
+        m_gravity = Vec2f(0, 1);
+    } else {
+        Vec2f center(ci::app::getWindowWidth()/2, ci::app::getWindowHeight()/2);
+        m_gravity = Vec2f(center - m_loc).normalized();
+    }
+    float gravity = Params::get().getf("gravity");
+    m_gravity *= gravity;
+    
 }
 
 void BasicParticle::update_behavior(const ParticleController &pc)
@@ -93,8 +102,9 @@ void BasicParticle::update_behavior(const ParticleController &pc)
 //            m_vec.y = -m_vec.y;
 //        }
 //    }
-    
     m_vel *= m_decay;
+
+    m_vec += m_gravity;
 
 }
 
@@ -157,14 +167,14 @@ void BasicParticle::draw()
             gl::drawStrokedCircle( loc(), radius );
             break;
         case 1:
-        gl::drawSolidCircle( loc(), radius );
+            gl::drawSolidCircle( loc(), radius );
             break;
         case 2:
             gl::drawStrokedRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
             break;
         case 3:
         default:
-        gl::drawSolidRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
+            gl::drawSolidRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
             break;
-    }    
+    }
 }
