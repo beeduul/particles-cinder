@@ -41,9 +41,9 @@ private:
     ColorAf m_birthColor;
     ColorAf m_deathColor;
 
-    float a;
-    float r;
-    float p;
+    float m_amp;
+    float m_freq;
+    float m_start;
     
     int m_drawStyle;
 };

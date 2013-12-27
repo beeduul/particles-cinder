@@ -55,9 +55,9 @@ void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, fl
 
     m_decay = Rand::randFloat(0.95, 0.99);
     
-    a = Rand::randFloat(0.1, Params::get().getf("pulse_amplitude"));
-    r = Params::get().getf("pulse_rate"); // Rand::randFloat(0, 10);
-    p = app::getElapsedSeconds(); // Rand::randFloat(0, M_PI);
+    m_amp = Rand::randFloat(0.9, 1.1) * Params::get().getf("pulse_amplitude");
+    m_freq = Params::get().getf("pulse_rate"); // Rand::randFloat(0, 10);
+    m_start = app::getElapsedSeconds(); // Rand::randFloat(0, M_PI);
     
     m_drawStyle = Params::get().getb("draw_style");
     
@@ -132,8 +132,8 @@ void BasicParticle::draw()
 
     gl::color(Color(stage(), t));
 
-    float phase = app::getElapsedSeconds() - p;
-    float swell = (1 + sin(phase * r) * a);
+    float t2 = m_freq * (app::getElapsedSeconds() - m_start);
+    float swell = (1 + sin(t2)) * m_amp;
     
     float radius = m_radius * swell;
     switch(stage()) {
