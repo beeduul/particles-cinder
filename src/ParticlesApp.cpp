@@ -11,6 +11,8 @@ void ParticlesApp::prepareSettings(Settings *settings)
 
 void ParticlesApp::setup()
 {
+    m_toggleMenu = false;
+
     m_captureCounter = 0;
     m_useClearImage = false;
     
