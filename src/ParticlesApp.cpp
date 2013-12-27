@@ -157,7 +157,7 @@ void ParticlesApp::setupGui()
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 5, m_params.getf("pulse_rate"), "pulse_rate"));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 5, m_params.getf("pulse_amplitude"), "pulse_amplitude"));
 
-    m_symmetrySlider = new ciUISlider(70, 15, 1, 8, m_params.geti("symmetry"), "symmetry", true);
+    m_symmetrySlider = new ciUISlider(70, 15, 1, MAX_SYMMETRY, m_params.geti("symmetry"), "symmetry", true);
     m_pGUIOn->addWidgetDown(m_symmetrySlider);
 
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 3, m_params.geti("draw_style"), "draw_style", true));
@@ -419,13 +419,24 @@ void ParticlesApp::keyDown( KeyEvent event )
             m_particleController.removeParticles(Rand::randInt(100));
         } break;
         
-        case 's': {
+        case 'S': {
             int symmetry = m_params.geti("symmetry");
-            symmetry %= 8;
-            symmetry++;
+            symmetry--;
+            if (symmetry == 0) {
+                symmetry = MAX_SYMMETRY;
+            }
             m_params.seti("symmetry", symmetry);
             m_symmetrySlider->setValue(symmetry);
-
+        } break;
+            
+        case 's': {
+            int symmetry = m_params.geti("symmetry");
+            symmetry++;
+            if (symmetry > MAX_SYMMETRY) {
+                symmetry = 1;
+            }
+            m_params.seti("symmetry", symmetry);
+            m_symmetrySlider->setValue(symmetry);
         } break;
             
         case ' ': {

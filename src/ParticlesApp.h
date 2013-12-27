@@ -36,6 +36,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+#define MAX_SYMMETRY 8
+
 class ParticlesApp : public AppNative {
     
 public:
