@@ -90,9 +90,9 @@ void ParticlesApp::draw()
 //        gl::drawStrokedRect(r);
 //    }
 
+#ifdef USE_KINECT
     Vec2f windowsize = getWindowBounds().getSize();
 
-#ifdef USE_KINECT
     if (useKinect() && m_kinect) {
         gl::color(Color::white());
         if( m_kinectDepthTexture ) {
