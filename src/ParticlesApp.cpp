@@ -59,6 +59,9 @@ void ParticlesApp::update()
 
     m_particleController.update();
     
+    std::string label("pcount: ");
+    m_particleCountLabel->setLabel(label + to_string(m_particleController.numParticles()));
+    
 //    if (getElapsedFrames() % 100  == 0) {
 //        cout << "num particles: # " << m_particleController.numParticles() << endl;
 //    }
@@ -138,6 +141,9 @@ void ParticlesApp::setupGui()
     m_pGUIOn->addWidgetDown(m_symmetrySlider);
 
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 3, m_params.geti("draw_style"), "draw_style", true));
+
+    m_particleCountLabel = new ciUIFPS(CI_UI_FONT_SMALL);
+    m_pGUIOn->addWidgetDown(m_particleCountLabel);
 
     m_pGUIOn->addWidgetDown(new ciUIFPS(CI_UI_FONT_SMALL));
 
