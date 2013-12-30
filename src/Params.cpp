@@ -11,10 +11,14 @@
 
 Params::Params()
 {
+    // kinect params
     setb("kinect", false);
     setf("kdepthThresholdLo", .3);
     setf("kdepthThresholdHi", 1);
+
+    // TODO deprecate
     setb("bounce", false);
+    
     setf("size", 10.0);
     setf("lifespan", 10.0);
     setf("pulse_rate", 0.0);

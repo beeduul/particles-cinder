@@ -11,6 +11,7 @@
 
 #include <map>
 #include <boost/variant.hpp>
+#include <boost/shared_ptr.hpp>
 
 using namespace std;
 
@@ -50,6 +51,6 @@ public:
     Params();
 };
 
-
+typedef boost::shared_ptr<Params> ParamsPtr;
 
 #endif

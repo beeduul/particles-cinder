@@ -41,12 +41,11 @@ private:
     ColorAf m_birthColor;
     ColorAf m_deathColor;
 
+    // move these into settings
     float m_amp;
     float m_freq;
     float m_start;
-    
     int m_drawStyle;
-    
     Vec2f m_gravity;
 };
 

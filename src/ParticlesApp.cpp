@@ -3,6 +3,11 @@
 
 #include "cinder/ip/Fill.h"
 
+ParticlesApp::ParticlesApp() :
+    m_params(new Params)
+{
+}
+
 void ParticlesApp::prepareSettings(Settings *settings)
 {
     settings->setTitle("Particles");
@@ -103,7 +108,7 @@ void ParticlesApp::draw()
         writeImage(path, copyWindowSurface() );
     }
 
-//    if (m_params.getb("bounce")) {
+//    if (m_params->getb("bounce")) {
 //        gl::color(Color::white());
 //        Rectf r = getWindowBounds();
 //        gl::drawStrokedRect(r);
@@ -124,8 +129,8 @@ void ParticlesApp::draw()
             m_kinectDepthTexture.bind( 0 );
             mShader.bind();
             mShader.uniform( "depthTex", 0 );
-            mShader.uniform( "depthThresholdLo", m_params.getf("kdepthThresholdLo") );
-            mShader.uniform( "depthThresholdHi", m_params.getf("kdepthThresholdHi") );
+            mShader.uniform( "depthThresholdLo", m_params->getf("kdepthThresholdLo") );
+            mShader.uniform( "depthThresholdHi", m_params->getf("kdepthThresholdHi") );
             gl::draw( mVboMesh );
             mShader.unbind();
             gl::popMatrices();
@@ -152,20 +157,20 @@ void ParticlesApp::setupGui()
     m_pGUIOn = new ciUICanvas();
     m_pGUIOn->toggleVisible();
     m_pGUIOn->addWidgetDown(new ciUILabelButton(false, "<<", CI_UI_FONT_LARGE));
-//    m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params.getb("bounce"), "bounce", CI_UI_FONT_MEDIUM));
-    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 20, m_params.getf("size"), "size"));
-    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 40, m_params.getf("lifespan"), "lifespan"));
+//    m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params->getb("bounce"), "bounce", CI_UI_FONT_MEDIUM));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 20, m_params->getf("size"), "size"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 40, m_params->getf("lifespan"), "lifespan"));
 
-    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 5, m_params.getf("pulse_rate"), "pulse_rate"));
-    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 5, m_params.getf("pulse_amplitude"), "pulse_amplitude"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 5, m_params->getf("pulse_rate"), "pulse_rate"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 5, m_params->getf("pulse_amplitude"), "pulse_amplitude"));
 
-    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, -.5, .5, m_params.getf("gravity"), "gravity"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, -.5, .5, m_params->getf("gravity"), "gravity"));
 
     
-    m_symmetrySlider = new ciUISlider(70, 15, 1, MAX_SYMMETRY, m_params.geti("symmetry"), "symmetry", true);
+    m_symmetrySlider = new ciUISlider(70, 15, 1, MAX_SYMMETRY, m_params->geti("symmetry"), "symmetry", true);
     m_pGUIOn->addWidgetDown(m_symmetrySlider);
 
-    m_drawStyleSlider = new ciUISlider(70, 15, 0, 3, m_params.geti("draw_style"), "draw_style", true);
+    m_drawStyleSlider = new ciUISlider(70, 15, 0, 3, m_params->geti("draw_style"), "draw_style", true);
     m_pGUIOn->addWidgetDown(m_drawStyleSlider);
 
     m_particleCountLabel = new ciUIFPS(CI_UI_FONT_SMALL);
@@ -176,8 +181,8 @@ void ParticlesApp::setupGui()
 
 #ifdef USE_KINECT
     if (m_kinect) {
-        m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params.getb("kinect"), "kinect", CI_UI_FONT_MEDIUM));
-        m_pGUIOn->addWidgetDown(new ciUIRangeSlider(20,120,0.0,1,m_params.getf("kdepthThresholdLo"),m_params.getf("kdepthThresholdHi"), "kdepth"));
+        m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params->getb("kinect"), "kinect", CI_UI_FONT_MEDIUM));
+        m_pGUIOn->addWidgetDown(new ciUIRangeSlider(20,120,0.0,1,m_params->getf("kdepthThresholdLo"),m_params->getf("kdepthThresholdHi"), "kdepth"));
     }
 #endif
   
@@ -195,7 +200,7 @@ void ParticlesApp::setupKinect()
     } else {
         cout << "Didn't find any Kinects" << endl;
     }
-    m_params.setb("kinect", (m_kinect != NULL));
+    m_params->setb("kinect", (m_kinect != NULL));
 
     if (m_kinect) {
         // SETUP CAMERA
@@ -268,39 +273,39 @@ void ParticlesApp::guiEvent(ciUIEvent *event)
     {
         m_toggleMenu = true;
     } else if (name == "kinect") {
-        m_params.setb("kinect", !m_params.getb("kinect"));
+        m_params->setb("kinect", !m_params->getb("kinect"));
     } else if (name == "kdepth") {
         ciUIRangeSlider *rslider = (ciUIRangeSlider *) event->widget;
-        m_params.setf("kdepthThresholdLo", rslider->getScaledValueLow());
-        m_params.setf("kdepthThresholdHi", rslider->getScaledValueHigh());
+        m_params->setf("kdepthThresholdLo", rslider->getScaledValueLow());
+        m_params->setf("kdepthThresholdHi", rslider->getScaledValueHigh());
 //    } else if (name == "bounce") {
-//        m_params.setb("bounce", !m_params.getb("bounce"));
+//        m_params->setb("bounce", !m_params->getb("bounce"));
 
     } else if (name == "pulse_rate") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        m_params.setf("pulse_rate", slider->getScaledValue());
+        m_params->setf("pulse_rate", slider->getScaledValue());
     } else if (name == "pulse_amplitude") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        m_params.setf("pulse_amplitude", slider->getScaledValue());
+        m_params->setf("pulse_amplitude", slider->getScaledValue());
 
     } else if (name == "gravity") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        m_params.setf("gravity", slider->getScaledValue());
+        m_params->setf("gravity", slider->getScaledValue());
         
     } else if (name == "size") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        m_params.setf("size", slider->getScaledValue());
+        m_params->setf("size", slider->getScaledValue());
     } else if (name == "lifespan") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        m_params.setf("lifespan", slider->getScaledValue());
+        m_params->setf("lifespan", slider->getScaledValue());
 
     } else if (name == "symmetry") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        m_params.seti("symmetry", slider->getScaledValue());
+        m_params->seti("symmetry", slider->getScaledValue());
 
     } else if (name == "draw_style") {
         ciUISlider *slider = (ciUISlider *) event->widget;
-        m_params.seti("draw_style", slider->getScaledValue());
+        m_params->seti("draw_style", slider->getScaledValue());
         
     } else {
         handled = false;
@@ -373,7 +378,7 @@ void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
     float dist = sqrt(cPosition.x * cPosition.x + cPosition.y * cPosition.y);
 
     float vAngle = atan2(vector.y, vector.x);
-    int symmetry = m_params.geti("symmetry");
+    int symmetry = m_params->geti("symmetry");
     float slice = M_PI * 2 / symmetry;
 
     for (int i = 0; i < symmetry; i++)
@@ -430,42 +435,42 @@ void ParticlesApp::keyDown( KeyEvent event )
         } break;
         
         case 'D': {
-            int draw_style = m_params.geti("draw_style");
+            int draw_style = m_params->geti("draw_style");
             draw_style--;
             if (draw_style < 0) {
                 draw_style = 3;
             }
-            m_params.seti("draw_style", draw_style);
+            m_params->seti("draw_style", draw_style);
             m_drawStyleSlider->setValue(draw_style);
         } break;
             
         case 'd': {
-            int draw_style = m_params.geti("draw_style");
+            int draw_style = m_params->geti("draw_style");
             draw_style++;
             if (draw_style > 3) {
                 draw_style = 0;
             }
-            m_params.seti("draw_style", draw_style);
+            m_params->seti("draw_style", draw_style);
             m_drawStyleSlider->setValue(draw_style);
         } break;
             
         case 'S': {
-            int symmetry = m_params.geti("symmetry");
+            int symmetry = m_params->geti("symmetry");
             symmetry--;
             if (symmetry == 0) {
                 symmetry = MAX_SYMMETRY;
             }
-            m_params.seti("symmetry", symmetry);
+            m_params->seti("symmetry", symmetry);
             m_symmetrySlider->setValue(symmetry);
         } break;
             
         case 's': {
-            int symmetry = m_params.geti("symmetry");
+            int symmetry = m_params->geti("symmetry");
             symmetry++;
             if (symmetry > MAX_SYMMETRY) {
                 symmetry = 1;
             }
-            m_params.seti("symmetry", symmetry);
+            m_params->seti("symmetry", symmetry);
             m_symmetrySlider->setValue(symmetry);
         } break;
             

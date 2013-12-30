@@ -41,6 +41,7 @@ using namespace std;
 class ParticlesApp : public AppNative {
     
 public:
+    ParticlesApp();
     
     void prepareSettings(Settings *settings);
     
@@ -63,7 +64,7 @@ public:
     void addParticleAt(Vec2f position, Vec2f vector);
     
     Params& params() {
-        return m_params;
+        return *m_params;
     }
 
 protected:
@@ -71,7 +72,7 @@ protected:
     void setFullScreen(bool fullscreen);
     
 private:
-    Params m_params;
+    ParamsPtr m_params;
     
     int m_captureCounter;
     bool m_useClearImage;
