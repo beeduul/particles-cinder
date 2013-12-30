@@ -12,6 +12,7 @@
 #define __ParticlesApp__ParticleController__
 
 #include "Particle.h"
+#include "Params.h"
 
 #include "cinder/Color.h"
 #include "cinder/Perlin.h"
@@ -25,7 +26,7 @@ public:
     void update();
     void draw();
 
-    void setColors(ColorAf birthColor, ColorAf deathColor);
+    void setParams(ParamsPtr ptrParams) { m_params = ptrParams; }
     
     int numParticles() const { return m_particles.size(); }
     
@@ -35,16 +36,18 @@ public:
 
     void moveParticles(const Vec2f &offset);
     
+    // unused
     Perlin m_perlin;
 
-    ColorAf averageColors();
-
 private:
+    ParamsPtr m_params;
     ColorAf m_birthColor;
     ColorAf m_deathColor;
     std::list<Particle *> m_particles;
 
     bool updateRemove(Particle *p);
 };
+
+typedef boost::shared_ptr<ParticleController> PtrParticleController;
 
 #endif /* defined(__ParticlesApp__ParticleController__) */

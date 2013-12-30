@@ -2,6 +2,7 @@
 #include "ParticlesApp.h"
 
 #include "cinder/ip/Fill.h"
+#include <boost/foreach.hpp>
 
 ParticlesApp::ParticlesApp() :
     m_params(new Params)
@@ -18,6 +19,8 @@ void ParticlesApp::prepareSettings(Settings *settings)
 
 void ParticlesApp::setup()
 {
+    particleControllers.push_back(PtrParticleController(new ParticleController));
+    
     m_toggleMenu = false;
 
     m_captureCounter = 0;
@@ -40,7 +43,10 @@ void ParticlesApp::setFullScreen(bool fullscreen)
     Vec2f original_center(app::getWindowWidth()/2, app::getWindowHeight()/2);
     AppBasic::setFullScreen(fullscreen);
     Vec2f new_center(app::getWindowWidth()/2, app::getWindowHeight()/2);
-    m_particleController.moveParticles(new_center - original_center);
+
+    BOOST_FOREACH(PtrParticleController particleController, particleControllers) {
+        particleController->moveParticles(new_center - original_center);
+    }
     
     m_clearImage = gl::Texture(getWindowWidth(), getWindowHeight());
 }
@@ -58,7 +64,7 @@ void ParticlesApp::update()
         m_clearImage.update(copyWindowSurface());
     }
     
-  m_eventHandled = false;
+    m_eventHandled = false;
   
 #ifdef USE_KINECT
     if (useKinect() && m_kinect) {
@@ -76,10 +82,14 @@ void ParticlesApp::update()
     m_pGUIOff->update();
     m_pGUIOn->update();
 
-    m_particleController.update();
+    int numParticles = 0;
+    BOOST_FOREACH(PtrParticleController particleController, particleControllers) {
+        particleController->update();
+        numParticles += particleController->numParticles();
+    }
     
     std::string label("pcount: ");
-    m_particleCountLabel->setLabel(label + to_string(m_particleController.numParticles()));
+    m_particleCountLabel->setLabel(label + to_string(numParticles));
     
 //    if (getElapsedFrames() % 100  == 0) {
 //        cout << "num particles: # " << m_particleController.numParticles() << endl;
@@ -89,17 +99,16 @@ void ParticlesApp::update()
 
 void ParticlesApp::draw()
 {
-//    ColorAf averageColor = m_particleController.averageColors();
-//    ColorAf clearColor(245/255.0, 245/255.0, 220/255.0); // 1 - averageColor.r, 1 - averageColor.g, 1 - averageColor.b);
-
     if (m_useClearImage && m_clearImage) {
         gl::draw(m_clearImage, getWindowBounds());
     } else {
-    ColorAf clearColor(Colorf::black());
-    gl::clear(clearColor, true); //clearColor * .5, true );
+        ColorAf clearColor(Colorf::black());
+        gl::clear(clearColor, true); //clearColor * .5, true );
     }
     
-    m_particleController.draw();
+    BOOST_FOREACH(PtrParticleController particleController, particleControllers) {
+        particleController->draw();
+    }
 
     if (m_capture && !m_capturePath.empty()) {
         fs::path path = m_capturePath;
@@ -329,7 +338,11 @@ void ParticlesApp::mouseDown( MouseEvent event )
     if (event.isLeftDown()) {
         ColorAf birthColor(Rand::randFloat(), Rand::randFloat(), Rand::randFloat());
         ColorAf deathColor = ColorAf(1 - birthColor.r, 1 - birthColor.g, 1 - birthColor.b);
-        m_particleController.setColors(birthColor, deathColor);
+        m_params->setColor("birthColor", birthColor);
+        m_params->setColor("deathColor", deathColor);
+
+        PtrParticleController activeController = particleControllers.front();
+        activeController->setParams(m_params);
 
         m_lastMouseLoc = event.getPos();
         addParticleAt(m_lastMouseLoc, Vec2f(0, 0));
@@ -369,6 +382,8 @@ void ParticlesApp::mouseDrag(MouseEvent event)
 
 void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
 {
+    PtrParticleController activeController = particleControllers.front();
+
     Vec2f size = getWindowBounds().getSize();
     Vec2f center = size / 2.0;
     
@@ -389,7 +404,7 @@ void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
         pAngle += slice;
         vAngle += slice;
         
-        m_particleController.addParticleAt(newPos, newVec);
+        activeController->addParticleAt(newPos, newVec);
     }
     
 }
@@ -419,21 +434,15 @@ void ParticlesApp::keyDown( KeyEvent event )
     
     switch(event.getChar()) {
         case 'c': {
-            m_particleController.removeParticles(m_particleController.numParticles());
+            BOOST_FOREACH(PtrParticleController particleController, particleControllers) {
+                particleController->removeParticles(particleController->numParticles());
+            }
         } break;
             
         case 'f': {
             setFullScreen(!isFullScreen());
         } break;
             
-        case 'p': {
-            m_particleController.addParticles(Rand::randInt(1000));
-        } break;
-
-        case 'P': {
-            m_particleController.removeParticles(Rand::randInt(100));
-        } break;
-        
         case 'D': {
             int draw_style = m_params->geti("draw_style");
             draw_style--;

@@ -81,8 +81,8 @@ private:
     bool m_capture;
     fs::path m_capturePath;
     
-    ParticleController m_particleController;
-  
+    list<PtrParticleController> particleControllers;
+    
   
     bool m_eventHandled;
   

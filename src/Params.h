@@ -17,7 +17,7 @@ using namespace std;
 
 class Params {
     
-    std::map<std::string, boost::variant<int, float, std::string, bool>> p;
+    std::map<std::string, boost::variant<int, float, std::string, bool, cinder::ColorAf>> p;
     
 public:
     
@@ -46,6 +46,14 @@ public:
     void setb(std::string key, bool value) {
         p[key] = value;
         
+    }
+    
+    cinder::ColorAf getColor(std::string key) {
+        return boost::get<cinder::ColorAf>(p[key]);
+    }
+    
+    void setColor(std::string key, cinder::ColorAf value) {
+        p[key] = value;
     }
 
     Params();

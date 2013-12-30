@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "Particle.h"
+#include "Params.h"
 
 class BasicParticle : public Particle
 {
@@ -23,15 +24,15 @@ public:
     //    const ColorAf& color(const ColorAf& new_color) { m_color.set(new_color); return m_color;}
 
     // methods
-    BasicParticle(const Vec2f &loc, ColorAf birthColor, ColorAf deathColor);
-    BasicParticle(const Vec2f &loc, const Vec2f &vec, ColorAf birthColor, ColorAf deathColor);
+    BasicParticle(const Vec2f &loc, ParamsPtr ptrParams);
+    BasicParticle(const Vec2f &loc, const Vec2f &vec, ParamsPtr ptrParams);
     virtual void update_behavior(const ParticleController &pc);
     virtual void draw();
 
     virtual ColorAf Color();
 
 private:
-    void initialize(const Vec2f &location, const Vec2f &direction, float velocity, ColorAf birthColor, ColorAf deathColor);
+    void initialize(const Vec2f &location, const Vec2f &direction, float velocity, ParamsPtr ptrParams);
 
     ColorAf Color(Stage stage, float t);
     

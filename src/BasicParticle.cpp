@@ -15,59 +15,59 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Easing.h"
 
-BasicParticle::BasicParticle(const Vec2f &location, ColorAf birthColor, ColorAf deathColor)
+BasicParticle::BasicParticle(const Vec2f &location, ParamsPtr ptrParams)
 {
     initialize(
         location,
         Vec2f(Rand::randFloat(-1, 1), Rand::randFloat(-1, 1)),
         Rand::randFloat(1),
-        birthColor,
-        deathColor
+        ptrParams
     );
 }
 
-BasicParticle::BasicParticle(const Vec2f &location, const Vec2f &direction, ColorAf birthColor, ColorAf deathColor) :
-    m_radius(Rand::randFloat(10))
+BasicParticle::BasicParticle(const Vec2f &location, const Vec2f &direction, ParamsPtr ptrParams)
 {
     initialize(
         location,
         direction,
         Rand::randFloat(1),
-        birthColor,
-        deathColor
+        ptrParams
     );
 }
 
-void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, float velocity, ColorAf birthColor, ColorAf deathColor)
+void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, float velocity, ParamsPtr ptrParams)
 {
     m_loc = location;
     m_vec = direction;
     m_vel = velocity;
 
-    m_radius = Params::get().getf("size");
+    m_radius = ptrParams->getf("size");
+    
+    ColorAf birthColor = ptrParams->getColor("birthColor") + ColorAf(Rand::randFloat(-.1, .1), Rand::randFloat(-.1, .1), Rand::randFloat(-.1, .1));
+    ColorAf deathColor = ptrParams->getColor("deathColor") + ColorAf(Rand::randFloat(-.1, .1), Rand::randFloat(-.1, .1), Rand::randFloat(-.1, .1));
 
     m_birthColor = birthColor;
     m_deathColor = deathColor;
     
-    stage_duration(birth, Params::get().getf("lifespan") * .2);
-    stage_duration(alive, Params::get().getf("lifespan") * .6);
-    stage_duration(dying, Params::get().getf("lifespan") * .2);
+    stage_duration(birth, ptrParams->getf("lifespan") * .2);
+    stage_duration(alive, ptrParams->getf("lifespan") * .6);
+    stage_duration(dying, ptrParams->getf("lifespan") * .2);
 
     m_decay = Rand::randFloat(0.95, 0.99);
     
-    m_amp = Rand::randFloat(0.9, 1.1) * Params::get().getf("pulse_amplitude");
-    m_freq = Params::get().getf("pulse_rate"); // Rand::randFloat(0, 10);
+    m_amp = Rand::randFloat(0.9, 1.1) * ptrParams->getf("pulse_amplitude");
+    m_freq = ptrParams->getf("pulse_rate"); // Rand::randFloat(0, 10);
     m_start = app::getElapsedSeconds(); // Rand::randFloat(0, M_PI);
     
-    m_drawStyle = Params::get().geti("draw_style");
+    m_drawStyle = ptrParams->geti("draw_style");
     
-    if (Params::get().geti("symmetry") == 1) {
+    if (ptrParams->geti("symmetry") == 1) {
         m_gravity = Vec2f(0, 1);
     } else {
         Vec2f center(ci::app::getWindowWidth()/2, ci::app::getWindowHeight()/2);
         m_gravity = Vec2f(center - m_loc).normalized();
     }
-    float gravity = Params::get().getf("gravity");
+    float gravity = ptrParams->getf("gravity");
     m_gravity *= gravity;
     
 }
