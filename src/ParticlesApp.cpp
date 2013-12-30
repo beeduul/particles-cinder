@@ -1,6 +1,8 @@
 
 #include "ParticlesApp.h"
 
+#include "cinder/ip/Fill.h"
+
 void ParticlesApp::prepareSettings(Settings *settings)
 {
     settings->setTitle("Particles");
