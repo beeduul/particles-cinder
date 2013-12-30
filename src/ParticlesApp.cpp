@@ -35,7 +35,7 @@ void ParticlesApp::setFullScreen(bool fullscreen)
     Vec2f new_center(app::getWindowWidth()/2, app::getWindowHeight()/2);
     m_particleController.moveParticles(new_center - original_center);
     
-    m_clearImage = gl::Texture::create(getWindowWidth(), getWindowHeight());
+    m_clearImage = gl::Texture(getWindowWidth(), getWindowHeight());
 }
 
 void ParticlesApp::quit()
@@ -48,7 +48,7 @@ void ParticlesApp::update()
 {
     if (m_captureCounter == 1) {
         m_useClearImage = true;
-        m_clearImage->update(copyWindowSurface());
+        m_clearImage.update(copyWindowSurface());
     }
     
   m_eventHandled = false;
@@ -480,10 +480,10 @@ void ParticlesApp::keyDown( KeyEvent event )
         case '>':
         {
             m_useClearImage = false;
-            m_clearImage = gl::Texture::create(getWindowWidth(), getWindowHeight());
+            m_clearImage = gl::Texture(getWindowWidth(), getWindowHeight());
             Surface32f mySurface(getWindowWidth(), getWindowHeight(), true, SurfaceChannelOrder::RGBA);
             cinder::ip::fill(&mySurface, Colorf::black());
-            m_clearImage->update(mySurface);
+            m_clearImage.update(mySurface);
         } break;
 
         case '.': {

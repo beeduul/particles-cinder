@@ -75,7 +75,7 @@ private:
     
     int m_captureCounter;
     bool m_useClearImage;
-    gl::TextureRef m_clearImage;
+    gl::Texture m_clearImage;
 
     bool m_capture;
     fs::path m_capturePath;
