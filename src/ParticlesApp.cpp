@@ -330,7 +330,6 @@ void ParticlesApp::mouseDown( MouseEvent event )
 {
     bool handled = m_eventHandled;
 
-    cout << "mouseDown, handled: " << handled << endl;
     if (handled) {
         return;
     }
@@ -352,7 +351,6 @@ void ParticlesApp::mouseDown( MouseEvent event )
 void ParticlesApp::mouseUp(MouseEvent event)
 {
     bool handled = m_eventHandled;
-    cout << "mouseUp, handled: " << handled << endl;
     
     // hack for double menu click
     if (m_toggleMenu) {
@@ -364,7 +362,6 @@ void ParticlesApp::mouseUp(MouseEvent event)
 void ParticlesApp::mouseDrag(MouseEvent event)
 {
     bool handled = m_eventHandled;
-    cout << "mouseDrag, handled: " << handled << endl;
 
     if (handled) {
         return;
@@ -383,36 +380,23 @@ void ParticlesApp::mouseDrag(MouseEvent event)
 void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
 {
     PtrParticleController activeController = particleControllers.front();
-
-    Vec2f size = getWindowBounds().getSize();
-    Vec2f center = size / 2.0;
-    
-    Vec2f cPosition = position - center;
-    
-    float pAngle = atan2(cPosition.y, cPosition.x);
-    float dist = sqrt(cPosition.x * cPosition.x + cPosition.y * cPosition.y);
-
-    float vAngle = atan2(vector.y, vector.x);
-    int symmetry = m_params->geti("symmetry");
-    float slice = M_PI * 2 / symmetry;
-
-    for (int i = 0; i < symmetry; i++)
-    {
-        Vec2f newPos = Vec2f(cos(pAngle), sin(pAngle)) * dist + center;
-        Vec2f newVec = Vec2f(cos(vAngle), sin(vAngle)) * vector.length();
-
-        pAngle += slice;
-        vAngle += slice;
-        
-        activeController->addParticleAt(newPos, newVec);
-    }
-    
+    activeController->addParticleAt(position, vector);
 }
 
 void ParticlesApp::toggleMenu()
 {
     m_pGUIOff->toggleVisible();
     m_pGUIOn->toggleVisible();
+}
+
+void ParticlesApp::keyUp(KeyEvent event) {
+    switch(event.getChar()) {
+        case 'r':
+        {
+            PtrParticleController activeController = particleControllers.front();
+            activeController->stopRecording();
+        } break;
+    }
 }
 
 void ParticlesApp::keyDown( KeyEvent event )
@@ -442,6 +426,11 @@ void ParticlesApp::keyDown( KeyEvent event )
         case 'f': {
             setFullScreen(!isFullScreen());
         } break;
+
+        case 'r': {
+            PtrParticleController activeController = particleControllers.front();
+            activeController->startRecording();
+        }break;
             
         case 'D': {
             int draw_style = m_params->geti("draw_style");

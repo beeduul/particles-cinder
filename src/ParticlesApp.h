@@ -60,6 +60,7 @@ public:
     //    virtual void mouseMove(MouseEvent event);
     virtual void mouseDrag(MouseEvent event);
     virtual void keyDown( KeyEvent event );
+    virtual void keyUp( KeyEvent event );
     
     void addParticleAt(Vec2f position, Vec2f vector);
     

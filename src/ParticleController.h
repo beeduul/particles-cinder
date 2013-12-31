@@ -20,6 +20,13 @@
 #include <iostream>
 #include <list>
 
+struct Recording {
+    Recording(Vec2f p, Vec2f d, int t);
+    Vec2f position;
+    Vec2f direction;
+    int time;
+};
+
 class ParticleController {
 public:
     ParticleController();
@@ -30,21 +37,32 @@ public:
     
     int numParticles() const { return m_particles.size(); }
     
-    void addParticleAt(const Vec2f &loc, const Vec2f &vec);
-    void addParticles( int amt );
+    void emitParticle(const Vec2f &position, const Vec2f &direction, ParamsPtr ptrParams);
+    
+    void addParticleAt(const Vec2f &position, const Vec2f &direction);
+//    void addParticles( int amt );
     void removeParticles( int amt );
 
     void moveParticles(const Vec2f &offset);
+    
+    void startRecording();
+    void stopRecording();
+    bool isRecording();
     
     // unused
     Perlin m_perlin;
 
 private:
+    bool m_isRecording;
+    float m_recordingBeganAt;
+    float m_recordingLength;
+    float m_lastPlaybackAt;
+    std::list<Recording> m_recording;
+    std::list<Recording>::iterator m_playbackHead;
+    
     ParamsPtr m_params;
-    ColorAf m_birthColor;
-    ColorAf m_deathColor;
     std::list<Particle *> m_particles;
-
+    
     bool updateRemove(Particle *p);
 };
 
