@@ -21,6 +21,7 @@ Params::Params()
     
     setf("size", 10.0);
     setf("lifespan", 10.0);
+    seti("density", 10);
     setf("pulse_rate", 0.0);
     setf("pulse_amplitude", 1.0);
     seti("symmetry", 1);

@@ -119,7 +119,10 @@ void ParticleController::emitParticle(const Vec2f &position, const Vec2f &direct
         pAngle += slice;
         vAngle += slice;
 
-        m_particles.push_back(new BasicParticle(newPos, newDir, ptrParams));
+        int num_particles = m_params->geti("density");
+        for (int i = 0; i < num_particles; i++) {
+            m_particles.push_back(new BasicParticle(newPos, newDir, ptrParams));
+        }
     }
 }
 

@@ -169,6 +169,7 @@ void ParticlesApp::setupGui()
 //    m_pGUIOn->addWidgetDown(new ciUILabelToggle(m_params->getb("bounce"), "bounce", CI_UI_FONT_MEDIUM));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 20, m_params->getf("size"), "size"));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 40, m_params->getf("lifespan"), "lifespan"));
+    m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, MAX_DENSITY, m_params->geti("density"), "density", true));
 
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 0, 5, m_params->getf("pulse_rate"), "pulse_rate"));
     m_pGUIOn->addWidgetDown(new ciUISlider(70, 15, 1, 5, m_params->getf("pulse_amplitude"), "pulse_amplitude"));
@@ -308,6 +309,10 @@ void ParticlesApp::guiEvent(ciUIEvent *event)
         ciUISlider *slider = (ciUISlider *) event->widget;
         m_params->setf("lifespan", slider->getScaledValue());
 
+    } else if (name == "density") {
+        ciUISlider *slider = (ciUISlider *) event->widget;
+        m_params->seti("density", slider->getScaledValue());
+
     } else if (name == "symmetry") {
         ciUISlider *slider = (ciUISlider *) event->widget;
         m_params->seti("symmetry", slider->getScaledValue());
@@ -368,12 +373,8 @@ void ParticlesApp::mouseDrag(MouseEvent event)
     }
 
     Vec2f mouse_vec = event.getPos() - m_lastMouseLoc;
-    //    if (event.isLeftDown()) {
-    int num_particles = Rand::randInt(10);
-    for (int i = 0; i < num_particles; i++) {
-        addParticleAt(event.getPos(), mouse_vec * .25);
-    }
-    //    }
+    addParticleAt(event.getPos(), mouse_vec * .25);
+
     m_lastMouseLoc = event.getPos();
 }
 
