@@ -18,7 +18,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-Recording::Recording(Vec2f p, Vec2f d, int t)
+Recording::Recording(Vec2f p, Vec2f d, float t)
 {
     position = p;
     direction = d;
@@ -131,7 +131,7 @@ void ParticleController::addParticleAt(const Vec2f &position, const Vec2f &direc
     emitParticle(position, direction, m_params);
 
     if (m_isRecording) {
-        int timeSinceRecordingBegan = app::getElapsedSeconds() - m_recordingBeganAt;
+        float timeSinceRecordingBegan = app::getElapsedSeconds() - m_recordingBeganAt;
         m_recording.push_back(Recording(position, direction, timeSinceRecordingBegan));
     }
 }

@@ -21,10 +21,10 @@
 #include <list>
 
 struct Recording {
-    Recording(Vec2f p, Vec2f d, int t);
+    Recording(Vec2f p, Vec2f d, float t);
     Vec2f position;
     Vec2f direction;
-    int time;
+    float time;
 };
 
 class ParticleController {
