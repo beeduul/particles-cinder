@@ -15,6 +15,9 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Easing.h"
 
+std::vector<GLfloat *> BasicParticle::m_vec_circle_verts;
+std::vector<gl::VboMesh> BasicParticle::m_vec_circle_vbo_meshes;
+
 BasicParticle::BasicParticle(const Vec2f &location, ParamsPtr ptrParams)
 {
     initialize(
@@ -164,17 +167,150 @@ void BasicParticle::draw()
 
     switch (m_drawStyle) {
         case 0:
-            gl::drawStrokedCircle( loc(), radius );
+            drawStrokedCircle( loc(), radius );
             break;
         case 1:
-            gl::drawSolidCircle( loc(), radius );
+            gl::drawSolidCircle(loc(), radius);
             break;
         case 2:
-            gl::drawStrokedRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
+            drawSolidCircle(loc(), radius);
             break;
         case 3:
+            drawSolidCircleVBO( loc(), radius );
+            break;
+        case 4:
+            gl::drawStrokedRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
+            break;
+        case 5:
         default:
             gl::drawSolidRect(Rectf(loc().x - radius, loc().y - radius, loc().x + radius, loc().y + radius));
             break;
     }
+}
+
+int BasicParticle::radiusToSegments(float radius)
+{
+    return (int)math<double>::floor( radius * M_PI * 2 );
+}
+
+GLfloat * BasicParticle::getCircleVerts(float radius)
+{
+    int numSegments = radiusToSegments(radius);
+    if( numSegments < 2 ) numSegments = 2;
+    if( numSegments > 250 ) numSegments = 250;
+    
+    if (numSegments >= m_vec_circle_verts.size()) {
+        m_vec_circle_verts.resize(numSegments, 0);
+    }
+    
+    int index = numSegments-1;
+    if (m_vec_circle_verts[index] == 0)
+    {
+        GLfloat *verts = new float[(numSegments+2)*2];
+        verts[0] = 0;
+        verts[1] = 0;
+        for( int s = 0; s <= numSegments; s++ ) {
+            float t = s / (float)numSegments * 2.0f * 3.14159f;
+            verts[(s+1)*2+0] = math<float>::cos( t );
+            verts[(s+1)*2+1] = math<float>::sin( t );
+        }
+        m_vec_circle_verts[index] = verts;
+    }
+
+    return m_vec_circle_verts[index];
+}
+
+
+void BasicParticle::drawStrokedCircle(const Vec2f &center, float radius)
+{
+    int numSegments = radiusToSegments(radius);
+    
+    GLfloat *verts = getCircleVerts(radius);
+    
+    glPushMatrix();
+    
+    glTranslatef(center.x, center.y, 0);
+    glScalef(radius, radius, 1);
+    
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts + 2);
+	glDrawArrays( GL_LINE_LOOP, 0, numSegments );
+	glDisableClientState( GL_VERTEX_ARRAY );
+    
+    glPopMatrix();
+}
+
+void BasicParticle::drawSolidCircle(const Vec2f &center, float radius)
+{
+    int numSegments = radiusToSegments(radius);
+
+    GLfloat *verts = getCircleVerts(radius);
+
+    glPushMatrix();
+    
+    glTranslatef(center.x, center.y, 0);
+    glScalef(radius, radius, 1);
+    
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+
+    glPopMatrix();
+}
+
+gl::VboMesh& BasicParticle::getSolidCircleVboMesh(float radius)
+{
+    int numSegments = radiusToSegments(radius);
+    if( numSegments < 2 ) numSegments = 2;
+    if( numSegments > 250 ) numSegments = 250;
+    
+    if (numSegments >= m_vec_circle_vbo_meshes.size()) {
+        m_vec_circle_vbo_meshes.resize(numSegments, gl::VboMesh());
+    }
+    
+    int index = numSegments-1;
+    if (m_vec_circle_vbo_meshes[index] == 0)
+    {
+        int numVertices = numSegments + 2;
+        int numIndices = numSegments + 2;
+        gl::VboMesh::Layout layout;
+        layout.setStaticIndices();
+        layout.setStaticPositions();
+
+        gl::VboMesh mesh(numVertices, numIndices, layout, GL_TRIANGLE_FAN);
+        
+        std::vector<uint32_t> indices(numIndices);
+        for (uint32_t i = 0; i < numIndices; i++) {
+            indices[i] = i;
+        }
+        mesh.bufferIndices(indices);
+        
+        std::vector<Vec3f> vertices(numVertices);
+        
+        vertices[0] = Vec3f(0, 0, 0);
+        for( int s = 0; s <= numSegments; s++ ) {
+            float t = s / (float)numSegments * 2.0f * 3.14159f;
+            vertices[s+1] = Vec3f(math<float>::cos( t ), math<float>::sin( t ), 0);
+        }
+        mesh.bufferPositions(vertices);
+        
+        m_vec_circle_vbo_meshes[index] = mesh;
+    }
+    
+    return m_vec_circle_vbo_meshes[index];
+    
+}
+
+
+void BasicParticle::drawSolidCircleVBO(const Vec2f &center, float radius)
+{
+    gl::VboMesh mesh = getSolidCircleVboMesh(radius);
+    glPushMatrix();
+    glTranslatef(center.x, center.y, 0);
+    glScalef(radius, radius, 1);
+    
+    gl::draw(mesh);
+    
+    glPopMatrix();
 }

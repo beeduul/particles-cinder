@@ -36,6 +36,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+#define MAX_DRAWSTYLE 5
 #define MAX_SYMMETRY 8
 #define MAX_DENSITY 10
 

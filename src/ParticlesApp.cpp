@@ -180,7 +180,7 @@ void ParticlesApp::setupGui()
     m_symmetrySlider = new ciUISlider(70, 15, 1, MAX_SYMMETRY, m_params->geti("symmetry"), "symmetry", true);
     m_pGUIOn->addWidgetDown(m_symmetrySlider);
 
-    m_drawStyleSlider = new ciUISlider(70, 15, 0, 3, m_params->geti("draw_style"), "draw_style", true);
+    m_drawStyleSlider = new ciUISlider(70, 15, 0, MAX_DRAWSTYLE, m_params->geti("draw_style"), "draw_style", true);
     m_pGUIOn->addWidgetDown(m_drawStyleSlider);
 
     m_particleCountLabel = new ciUIFPS(CI_UI_FONT_SMALL);
@@ -437,7 +437,7 @@ void ParticlesApp::keyDown( KeyEvent event )
             int draw_style = m_params->geti("draw_style");
             draw_style--;
             if (draw_style < 0) {
-                draw_style = 3;
+                draw_style = MAX_DRAWSTYLE;
             }
             m_params->seti("draw_style", draw_style);
             m_drawStyleSlider->setValue(draw_style);
@@ -446,7 +446,7 @@ void ParticlesApp::keyDown( KeyEvent event )
         case 'd': {
             int draw_style = m_params->geti("draw_style");
             draw_style++;
-            if (draw_style > 3) {
+            if (draw_style > MAX_DRAWSTYLE) {
                 draw_style = 0;
             }
             m_params->seti("draw_style", draw_style);
