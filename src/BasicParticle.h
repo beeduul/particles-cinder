@@ -15,6 +15,7 @@
 #include "Params.h"
 
 #include <cinder/gl/Vbo.h>
+#include <cinder/gl/GlslProg.h>
 
 class BasicParticle : public Particle
 {
@@ -67,7 +68,10 @@ private:
     static gl::VboMesh& getSolidCircleVboMesh(float radius);
     static std::vector<gl::VboMesh> m_vec_circle_vbo_meshes;
     
-
+    // shaders
+    static gl::GlslProg m_circleShader;
+    void initializeGlsl();
+    void drawShaderCircle(const Vec2f &center, float radius);
 };
 
 #endif /* defined(__ParticlesApp__BasicParticle__) */

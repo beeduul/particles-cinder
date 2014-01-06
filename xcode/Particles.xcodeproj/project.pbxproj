@@ -19,6 +19,8 @@
 		3F71BEE218581AB1001320FB /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F71BED918581AB1001320FB /* Particle.cpp */; };
 		3F71BEE318581AB1001320FB /* ParticleController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F71BEDB18581AB1001320FB /* ParticleController.cpp */; };
 		3F71BEE418581AB1001320FB /* ParticlesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F71BEDD18581AB1001320FB /* ParticlesApp.cpp */; };
+		3F8D0B7D1879ED6400BF33B6 /* circleVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 3F8D0B7C1879ED6400BF33B6 /* circleVert.glsl */; };
+		3F8D0B7F1879ED7900BF33B6 /* circleFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 3F8D0B7E1879ED7900BF33B6 /* circleFrag.glsl */; };
 		3F8F14101825AF160005516C /* mainFrag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 3F8F140E1825AF160005516C /* mainFrag.glsl */; };
 		3F8F14111825AF160005516C /* mainVert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 3F8F140F1825AF160005516C /* mainVert.glsl */; };
 		3FA224BB182562DA00E4AB01 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FA224BA182562DA00E4AB01 /* IOKit.framework */; };
@@ -49,6 +51,8 @@
 		3F71BEDC18581AB1001320FB /* ParticleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleController.h; path = ../src/ParticleController.h; sourceTree = "<group>"; };
 		3F71BEDD18581AB1001320FB /* ParticlesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticlesApp.cpp; path = ../src/ParticlesApp.cpp; sourceTree = "<group>"; };
 		3F71BEDE18581AB1001320FB /* ParticlesApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticlesApp.h; path = ../src/ParticlesApp.h; sourceTree = "<group>"; };
+		3F8D0B7C1879ED6400BF33B6 /* circleVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = circleVert.glsl; path = ../resources/circleVert.glsl; sourceTree = "<group>"; };
+		3F8D0B7E1879ED7900BF33B6 /* circleFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = circleFrag.glsl; path = ../resources/circleFrag.glsl; sourceTree = "<group>"; };
 		3F8F140D1825AC790005516C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		3F8F140E1825AF160005516C /* mainFrag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mainFrag.glsl; path = ../resources/mainFrag.glsl; sourceTree = "<group>"; };
 		3F8F140F1825AF160005516C /* mainVert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mainVert.glsl; path = ../resources/mainVert.glsl; sourceTree = "<group>"; };
@@ -171,6 +175,8 @@
 				3F8F140E1825AF160005516C /* mainFrag.glsl */,
 				3F8F140F1825AF160005516C /* mainVert.glsl */,
 				81AB78D0BF084367B8188D5A /* Info.plist */,
+				3F8D0B7C1879ED6400BF33B6 /* circleVert.glsl */,
+				3F8D0B7E1879ED7900BF33B6 /* circleFrag.glsl */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -236,6 +242,8 @@
 			files = (
 				89084398F5A24C25843B71FB /* CinderApp.icns in Resources */,
 				3F8F14101825AF160005516C /* mainFrag.glsl in Resources */,
+				3F8D0B7D1879ED6400BF33B6 /* circleVert.glsl in Resources */,
+				3F8D0B7F1879ED7900BF33B6 /* circleFrag.glsl in Resources */,
 				3F8F14111825AF160005516C /* mainVert.glsl in Resources */,
 				3F71BED318581A96001320FB /* NewMedia Fett.ttf in Resources */,
 				3F71BEE018581AB1001320FB /* ciUI in Resources */,

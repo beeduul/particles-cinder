@@ -11,12 +11,15 @@
 #include "BasicParticle.h"
 #include "ParticleController.h"
 
+#include <cinder/app/AppNative.h>
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Easing.h"
 
 std::vector<GLfloat *> BasicParticle::m_vec_circle_verts;
 std::vector<gl::VboMesh> BasicParticle::m_vec_circle_vbo_meshes;
+
+gl::GlslProg BasicParticle::m_circleShader;
 
 BasicParticle::BasicParticle(const Vec2f &location, ParamsPtr ptrParams)
 {
@@ -38,8 +41,20 @@ BasicParticle::BasicParticle(const Vec2f &location, const Vec2f &direction, Para
     );
 }
 
+void BasicParticle::initializeGlsl()
+{
+    m_circleShader = gl::GlslProg(
+        app::loadResource( "circleVert.glsl" ),
+        app::loadResource( "circleFrag.glsl" )
+    );
+}
+
 void BasicParticle::initialize(const Vec2f &location, const Vec2f &direction, float velocity, ParamsPtr ptrParams)
 {
+    if (!m_circleShader) {
+        initializeGlsl();
+    }
+    
     m_loc = location;
     m_vec = direction;
     m_vel = velocity;
@@ -167,7 +182,8 @@ void BasicParticle::draw()
 
     switch (m_drawStyle) {
         case 0:
-            drawStrokedCircle( loc(), radius );
+            //drawStrokedCircle( loc(), radius );
+            drawShaderCircle(loc(), radius);
             break;
         case 1:
             gl::drawSolidCircle(loc(), radius);
@@ -313,4 +329,16 @@ void BasicParticle::drawSolidCircleVBO(const Vec2f &center, float radius)
     gl::draw(mesh);
     
     glPopMatrix();
+}
+
+void BasicParticle::drawShaderCircle(const Vec2f &center, float radius)
+{
+    m_circleShader.bind();
+    m_circleShader.uniform("color", Color());
+    glPushMatrix();
+    glTranslatef(center.x, center.y, 0);
+    Rectf r(-radius, -radius, radius, radius);
+    gl::drawSolidRect(r);
+    glPopMatrix();
+    m_circleShader.unbind();
 }
