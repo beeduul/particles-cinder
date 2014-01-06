@@ -64,10 +64,10 @@ public:
     virtual void keyDown( KeyEvent event );
     virtual void keyUp( KeyEvent event );
     
-    void addParticleAt(Vec2f position, Vec2f vector);
+    void addParticleAt(Vec2f position, Vec2f vector, ParticleController::ControlType type);
     
-    Params& params() {
-        return *m_params;
+    ParamsPtr& params() {
+        return m_params;
     }
 
 protected:

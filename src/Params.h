@@ -15,13 +15,16 @@
 
 using namespace std;
 
+class Params; // forward declaration for shared_ptr
+typedef boost::shared_ptr<Params> ParamsPtr;
+
 class Params {
     
     std::map<std::string, boost::variant<int, float, std::string, bool, cinder::ColorAf>> p;
     
 public:
     
-    static Params& get();
+    static ParamsPtr& get();
     
     float getf(std::string key) {
         return boost::get<float>(p[key]);
@@ -58,7 +61,5 @@ public:
 
     Params();
 };
-
-typedef boost::shared_ptr<Params> ParamsPtr;
 
 #endif

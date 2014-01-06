@@ -20,26 +20,24 @@
 #include <iostream>
 #include <list>
 
-struct Recording {
-    Recording(Vec2f p, Vec2f d, float t);
-    Vec2f position;
-    Vec2f direction;
-    float time;
-};
-
 class ParticleController {
+    
 public:
+
+    enum ControlType { eMouseDown, eMouseDrag, eMouseUp };
+
     ParticleController();
     void update();
     void draw();
 
     void setParams(ParamsPtr ptrParams) { m_params = ptrParams; }
+    ParamsPtr getParams() { return m_useGlobalParams ? Params::get() : m_params; }
     
     int numParticles() const { return m_particles.size(); }
     
     void emitParticle(const Vec2f &position, const Vec2f &direction, ParamsPtr ptrParams);
     
-    void addParticleAt(const Vec2f &position, const Vec2f &direction);
+    void addParticleAt(const Vec2f &position, const Vec2f &direction, ControlType type);
 //    void addParticles( int amt );
     void removeParticles( int amt );
 
@@ -53,6 +51,20 @@ public:
     Perlin m_perlin;
 
 private:
+
+    struct Recording {
+        Recording(Vec2f p, Vec2f d, ControlType ty, float t) {
+            position = p;
+            direction = d;
+            type = ty;
+            time = t;
+        }
+        Vec2f position;
+        Vec2f direction;
+        ControlType type;
+        float time;
+    };
+    
     bool m_isRecording;
     float m_recordingBeganAt;
     float m_recordingLength;
@@ -60,7 +72,9 @@ private:
     std::list<Recording> m_recording;
     std::list<Recording>::iterator m_playbackHead;
     
+    bool m_useGlobalParams;
     ParamsPtr m_params;
+
     std::list<Particle *> m_particles;
     
     bool updateRemove(Particle *p);

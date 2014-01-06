@@ -18,15 +18,9 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-Recording::Recording(Vec2f p, Vec2f d, float t)
-{
-    position = p;
-    direction = d;
-    time = t;
-}
-
 ParticleController::ParticleController() :
-    m_isRecording(false)
+    m_isRecording(false),
+    m_useGlobalParams(false)
 {
 }
 
@@ -62,7 +56,14 @@ void ParticleController::update()
         bool playingBack = true;
         while (playingBack) {
             if (m_lastPlaybackAt + m_playbackHead->time < app::getElapsedSeconds()) {
-                emitParticle(m_playbackHead->position, m_playbackHead->direction, m_params);
+                if (m_playbackHead->type == eMouseDown) {
+                    ColorAf birthColor(Rand::randFloat(), Rand::randFloat(), Rand::randFloat());
+                    ColorAf deathColor = ColorAf(1 - birthColor.r, 1 - birthColor.g, 1 - birthColor.b);
+                    getParams()->setColor("birthColor", birthColor);
+                    getParams()->setColor("deathColor", deathColor);
+
+                }
+                emitParticle(m_playbackHead->position, m_playbackHead->direction, getParams());
                 m_playbackHead++;
                 
                 if (m_playbackHead == m_recording.end()) {
@@ -108,7 +109,7 @@ void ParticleController::emitParticle(const Vec2f &position, const Vec2f &direct
     float dist = sqrt(cPosition.x * cPosition.x + cPosition.y * cPosition.y);
     
     float vAngle = atan2(direction.y, direction.x);
-    int symmetry = m_params->geti("symmetry");
+    int symmetry = getParams()->geti("symmetry");
     float slice = M_PI * 2 / symmetry;
     
     for (int i = 0; i < symmetry; i++)
@@ -119,20 +120,20 @@ void ParticleController::emitParticle(const Vec2f &position, const Vec2f &direct
         pAngle += slice;
         vAngle += slice;
 
-        int num_particles = m_params->geti("density");
+        int num_particles = getParams()->geti("density");
         for (int i = 0; i < num_particles; i++) {
             m_particles.push_back(new BasicParticle(newPos, newDir, ptrParams));
         }
     }
 }
 
-void ParticleController::addParticleAt(const Vec2f &position, const Vec2f &direction)
+void ParticleController::addParticleAt(const Vec2f &position, const Vec2f &direction, ControlType type)
 {
-    emitParticle(position, direction, m_params);
+    emitParticle(position, direction, getParams());
 
     if (m_isRecording) {
         float timeSinceRecordingBegan = app::getElapsedSeconds() - m_recordingBeganAt;
-        m_recording.push_back(Recording(position, direction, timeSinceRecordingBegan));
+        m_recording.push_back(Recording(position, direction, type, timeSinceRecordingBegan));
     }
 }
 

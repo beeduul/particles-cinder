@@ -349,13 +349,13 @@ void ParticlesApp::mouseDown( MouseEvent event )
         activeController->setParams(m_params);
 
         m_lastMouseLoc = event.getPos();
-        addParticleAt(m_lastMouseLoc, Vec2f(0, 0));
+        addParticleAt(m_lastMouseLoc, Vec2f(0, 0), ParticleController::eMouseDown);
     }
 }
 
 void ParticlesApp::mouseUp(MouseEvent event)
 {
-    bool handled = m_eventHandled;
+//    bool handled = m_eventHandled;
     
     // hack for double menu click
     if (m_toggleMenu) {
@@ -373,15 +373,15 @@ void ParticlesApp::mouseDrag(MouseEvent event)
     }
 
     Vec2f mouse_vec = event.getPos() - m_lastMouseLoc;
-    addParticleAt(event.getPos(), mouse_vec * .25);
+    addParticleAt(event.getPos(), mouse_vec * .25, ParticleController::eMouseDrag);
 
     m_lastMouseLoc = event.getPos();
 }
 
-void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector)
+void ParticlesApp::addParticleAt(Vec2f position, Vec2f vector, ParticleController::ControlType type)
 {
     PtrParticleController activeController = particleControllers.front();
-    activeController->addParticleAt(position, vector);
+    activeController->addParticleAt(position, vector, type);
 }
 
 void ParticlesApp::toggleMenu()

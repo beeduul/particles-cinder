@@ -29,7 +29,7 @@ Params::Params()
     setf("gravity", 0);
 }
 
-Params &Params::get()
+ParamsPtr &Params::get()
 {
     return ((ParticlesApp *) ci::app::App::get())->params();
 }
