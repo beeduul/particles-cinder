@@ -102,7 +102,7 @@ void ParticlesApp::draw()
     if (m_useClearImage && m_clearImage) {
         gl::draw(m_clearImage, getWindowBounds());
     } else {
-        ColorAf clearColor(Colorf::black());
+        ColorAf clearColor(145/255.0, 129/255.0, 81/255.0);
         gl::clear(clearColor, true); //clearColor * .5, true );
     }
     

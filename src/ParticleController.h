@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <list>
+#include <array>
 
 class ParticleController {
     
@@ -78,6 +79,20 @@ private:
     std::list<Particle *> m_particles;
     
     bool updateRemove(Particle *p);
+    
+    static const int kMaxParticles = 100000;
+    std::array<float, 4 * kMaxParticles> m_gpuPositionsArray; // x, y, z, radius
+    std::array<float, 4 * kMaxParticles> m_gpuColorsArray;
+    
+    GLuint m_vaoID;                      // three vertex array objects, one for each drawn object
+
+    GLuint billboard_vertex_buffer;
+    GLuint particles_position_buffer;
+    GLuint particles_color_buffer;
+    void createBuffers();
+    void updateBuffers();
+    void fillBuffers();
+    void drawBuffers();
 };
 
 typedef boost::shared_ptr<ParticleController> PtrParticleController;
